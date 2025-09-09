@@ -25,10 +25,20 @@ tabs = st.tabs(["Live Sensor Control", "Decision-Making Scenario"])
 
 # ---------------- Tab 1 ----------------
 with tabs[0]:
-    st.sidebar.header("Adjust Sensor Readings")
-    vibration = st.sidebar.slider("Vibration (mm/s)", 0.0, 10.0, 3.0, 0.1)
-    temperature = st.sidebar.slider("Temperature (°C)", 30.0, 120.0, 60.0, 1.0)
-    rpm = st.sidebar.slider("RPM", 1500, 2000, 1750, 10)
+    # st.sidebar.header("Adjust Sensor Readings")
+    # vibration = st.sidebar.slider("Vibration (mm/s)", 0.0, 10.0, 3.0, 0.1)
+    # temperature = st.sidebar.slider("Temperature (°C)", 30.0, 120.0, 60.0, 1.0)
+    # rpm = st.sidebar.slider("RPM", 1500, 2000, 1750, 10)
+
+    col1, _ = st.columns([1, 2])
+    with col1:
+        st.subheader("🔧 Adjust Sensor Readings")
+
+        # Sensor input sliders
+        vibration = st.slider("Vibration (mm/s) (Range: 0–10 mm/s)", 0.0, 10.0, 3.0, 0.1)
+        temperature = st.slider("Temperature (°C) (Range: 30–120 °C)", 30.0, 120.0, 60.0, 1.0)
+        rpm = st.slider("RPM (Range: 1500–2000)", 1500, 2000, 1750, 10)
+
 
     # Prediction
     input_scaled = scaler.transform([[vibration, temperature, rpm]])
@@ -110,22 +120,48 @@ with tabs[0]:
     </div>
     """
 
-    # Output section
-    st.subheader("📊 Prediction Output")
-    st.metric(label="Failure Probability", value=f"{failure_prob*100:.2f}%")
-    st.metric(label="Maintenance Status", value=status)
+    # Estimate RUL based on failure probability
+    if failure_prob > 0.8:
+        rul_hours = random.randint(1, 12)
+        rul = f"{rul_hours} hours"
+    elif failure_prob > 0.6:
+        rul_hours = random.randint(12, 48)
+        rul = f"{rul_hours} hours"
+    elif failure_prob > 0.4:
+        rul_days = random.randint(2, 5)
+        rul = f"{rul_days} days"
+    elif failure_prob > 0.2:
+        rul_days = random.randint(5, 10)
+        rul = f"{rul_days} days"
+    else:
+        rul_days = random.randint(10, 30)
+        rul = f"{rul_days} days"
+
+    # Show RUL estimate
+    rul_col, _ = st.columns([1, 1])
+    
+
+
+     # Metrics in row
+    mcol1, mcol2, mcol3 = st.columns([1, 1, 1])
+    with mcol1:
+        st.metric(label="Failure Probability", value=f"{failure_prob*100:.2f}%")
+    with mcol2:
+        st.metric(label="Maintenance Status", value=status)
+    with mcol3:
+        st.metric(label="🕒 Estimated Remaining Useful Life (RUL)", value=rul)
 
     # Visual twin
     st.subheader("🧠 Digital Twin Visualization")
     st.markdown(digital_twin, unsafe_allow_html=True)
 
     # Sensor readings
-    st.subheader("🔍 Sensor Readings")
-    st.write({
-        "Vibration (mm/s)": vibration,
-        "Temperature (°C)": temperature,
-        "RPM": rpm
-    })
+    # st.subheader("🔍 Sensor Readings")
+    # st.write({
+    #     "Vibration (mm/s)": vibration,
+    #     "Temperature (°C)": temperature,
+    #     "RPM": rpm
+    # })
 
 # ---------------- Tab 2 ----------------
 with tabs[1]:

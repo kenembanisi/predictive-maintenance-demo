@@ -12,13 +12,16 @@ scaler = joblib.load("pump_scaler.pkl")
 # Page setup
 st.set_page_config(page_title="Predictive Maintenance Demo", layout="wide")
 
-# Show image in a column (1/3 width)
-left_col, _, _ = st.columns([1, 2, 2])
-with left_col:
-    st.image("centrifugal-pump-11.jpg", caption="Real Centrifugal Pump", use_column_width=True)
 
 # Title
 st.title("🔧 Predictive Maintenance Demo: Smart Pump Monitoring")
+
+
+# Show image in a column (1/3 width)
+_, centre_col, _ = st.columns([1, 2, 2])
+with centre_col:
+    st.image("centrifugal-pump-11.jpg", caption="Real Centrifugal Pump", use_container_width=True)
+
 
 # Tabs
 tabs = st.tabs(["Live Sensor Control", "Decision-Making Scenario"])
